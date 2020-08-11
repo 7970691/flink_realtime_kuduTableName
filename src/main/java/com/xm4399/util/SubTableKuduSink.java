@@ -78,9 +78,6 @@ public class SubTableKuduSink extends RichSinkFunction<ConsumerRecord<String,Str
              kuduTable = kuduUtil.getKuduTable(kuduTableName);
         }else{
             tableNameList.add(tableName);
-            for (String table : tableNameList){
-                System.out.println("list里包含的表名有>>>>>>>>>" +table);
-            }
             kuduTable = kuduUtil.getKuduTable(kuduTableName);
         }
         if(tableNameList.contains(RowTableName)){
@@ -98,7 +95,7 @@ public class SubTableKuduSink extends RichSinkFunction<ConsumerRecord<String,Str
                 }
             }
         }else{
-            System.out.println("表" + tableName + "不在kudu过滤范围");
+            System.out.println("表" + RowTableName + "不在kudu过滤范围");
         }
     }
 

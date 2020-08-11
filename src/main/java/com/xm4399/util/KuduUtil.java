@@ -124,8 +124,6 @@ public class KuduUtil implements Serializable {
                     }
                 }
 
-
-
                 session.apply(delete);
             }
         }
@@ -142,7 +140,7 @@ public class KuduUtil implements Serializable {
                 Upsert upsert = kuduTable.newUpsert();
                 PartialRow row = upsert.getRow();
                 JSONObject fieldValue = array.getJSONObject(i);
-                String fieldValueStirng = fieldValue.toString();
+                String fieldValueStirng = fieldValue.toString(); // data所有内容
                 System.out.println("字段的内容为>>>>>>>>>>>>>"  + fieldValueStirng);
                 Schema colSchema =kuduTable.getSchema();
                 List<ColumnSchema> colList = colSchema.getColumns();
@@ -157,7 +155,7 @@ public class KuduUtil implements Serializable {
                     Common.DataType dataType = colType.getDataType(decimalCol);
                     System.out.println("获取到dataType>>>>>>>>>>>>>>>>>" + dataType.toString());
                     if(fieldValue.containsKey(colName)){
-                        System.out.println("fieldValue包含了kudu字段名>>>>>>>>");
+                        System.out.println("fieldValue包含了kudu字段名>>>>>>>>" + colName);
                         try{
                            String field = fieldValue.get(colName).toString();
                             System.out.println("要加入的字段内容为>>>>>>>>>>" + field);

@@ -22,20 +22,20 @@ public class RealTimeIncrease2Kudu {
         //  从kafka中读取数据
         // 创建kafka相关的配置
         Properties properties = new Properties();
-        //properties.setProperty("bootstrap.servers", "localhost:9092");
+        properties.setProperty("enable.auto.commit", "true");
         properties.setProperty("bootstrap.servers", "10.0.0.194:9092,10.0.0.195:9092,10.0.0.199:9092");
-        properties.setProperty("group.id", "aa");
+        properties.setProperty("group.id", "aaaaaad");
         properties.setProperty("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         properties.setProperty("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-        properties.setProperty("auto.offset.reset", "latest");
+        //properties.setProperty("auto.offset.reset", "earliest");
         Properties props = new Properties();
 
         //ConfArgsPojo confArgsPojo = new ConfArgsPojo(address, username, password, dbName, tableName, isSubTable, isRealtime);
 
         DataStreamSink<ConsumerRecord<String,String>> stream = env
                 .addSource(new FlinkKafkaConsumer<ConsumerRecord<String,String>>(isRealtime, new KafkaStringSchema(), properties))
-                //.addSource(new FlinkKafkaConsumer<ConsumerRecord<String,String>>("qianduan_test", new KafkaStringSchema(), properties))
                 .addSink(new SubTableKuduSink(address, username, password, dbName, tableName, isSubTable, isRealtime, kuduTableName));
+        // .addSource(new FlinkKafkaConsumer<ConsumerRecord<String,String>>("qianduan_test", new KafkaStringSchema(), properties))
         try {
             env.execute();
         } catch (Exception exception) {
