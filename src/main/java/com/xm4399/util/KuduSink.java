@@ -8,7 +8,7 @@ import org.apache.kudu.client.*;
 
 import java.util.ArrayList;
 
-public class SubTableKuduSink extends RichSinkFunction<ConsumerRecord<String,String>> {
+public class KuduSink extends RichSinkFunction<ConsumerRecord<String,String>> {
     KuduUtil kuduUtil = null;
     KuduSession kuduSession = null;
     private  String address;
@@ -17,19 +17,19 @@ public class SubTableKuduSink extends RichSinkFunction<ConsumerRecord<String,Str
     private  String dbName;
     private  String tableName;
     private  String isSubTable;
-    private  String isRealtime;
+    private  String topic;
     private  String kuduTableName;
 
 
-    public SubTableKuduSink(String address, String username, String password, String dbName, String tableName,
-                            String isSubTable, String isRealtime, String kuduTableName){
+    public KuduSink(String address, String username, String password, String dbName, String tableName,
+                    String isSubTable, String topic, String kuduTableName){
         this.address = address;
         this.username = username;
         this.password = password;
         this.dbName = dbName;
         this.tableName =tableName;
         this.isSubTable = isSubTable;
-        this.isRealtime = isRealtime;
+        this.topic = topic;
         this.kuduTableName = kuduTableName;
 
     }
@@ -40,7 +40,7 @@ public class SubTableKuduSink extends RichSinkFunction<ConsumerRecord<String,Str
             kuduUtil = new KuduUtil();
         }
         //String isSubTable = "true";
-        processEveryRow(value,kuduUtil,address, username, password, dbName, tableName, isSubTable, isRealtime, kuduTableName );
+        processEveryRow(value,kuduUtil,address, username, password, dbName, tableName, isSubTable, topic, kuduTableName );
     }
 
     @Override
