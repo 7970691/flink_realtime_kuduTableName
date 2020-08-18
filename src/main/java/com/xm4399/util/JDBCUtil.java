@@ -59,6 +59,8 @@ public class JDBCUtil {
         return  confInfoArr;
     }
 
+
+
     public static Connection getConnection (){
         Connection connection = null;
         try {

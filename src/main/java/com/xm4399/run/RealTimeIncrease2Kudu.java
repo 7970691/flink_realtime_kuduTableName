@@ -46,7 +46,7 @@ public class RealTimeIncrease2Kudu {
         FlinkKafkaConsumer<ConsumerRecord<String,String>> consumer
                 = new FlinkKafkaConsumer<ConsumerRecord<String,String>>(topic, new KafkaStringSchema(), properties);
 
-        consumer.setStartFromTimestamp(System.currentTimeMillis() - 3600000); //从一个小时前开始消费
+        consumer.setStartFromTimestamp(System.currentTimeMillis() - 1800000); //从一个小时前开始消费
         DataStreamSink<ConsumerRecord<String,String>> stream = env
                 .addSource(consumer)
                 .addSink(new KuduSink(address, username, password, dbName, tableName, isSubTable, topic, kuduTableName));
