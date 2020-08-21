@@ -59,7 +59,39 @@ public class JDBCUtil {
         return  confInfoArr;
     }
 
+    // flink任务running,更新mysql状态
+    public static void updateRunningFlinkRealtimeStatus(String jobID )  {
+        Connection connection = null;
+        Statement stmt = null;
+        try {
+            connection = getConnection();
+            stmt = connection.createStatement();
+            String sql = "update data_syn_status set flink_realtime_status = 2 where job_id = " + jobID + ";";
+            stmt.executeUpdate(sql);
+            stmt.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }finally {
+            close(connection);
+        }
+    }
 
+    // flink任务异常,更新mysql状态
+    public static void updateExceptionFlinkRealtimeStatus(String jobID )  {
+        Connection connection = null;
+        Statement stmt = null;
+        try {
+            connection = getConnection();
+            stmt = connection.createStatement();
+            String sql = "update data_syn_status set flink_realtime_status =-1 where job_id = " + jobID + ";";
+            stmt.executeUpdate(sql);
+            stmt.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }finally {
+            close(connection);
+        }
+    }
 
     public static Connection getConnection (){
         Connection connection = null;
