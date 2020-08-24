@@ -33,6 +33,8 @@ public class RealTimeIncrease2Kudu {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         // 设置无重试模式,job出现意外时直接失败
         env.setRestartStrategy(RestartStrategies.noRestart());
+        // 设置check point
+        
         //  从kafka中读取数据
         // 创建kafka相关的配置
         Properties properties = new Properties();
@@ -49,7 +51,7 @@ public class RealTimeIncrease2Kudu {
         FlinkKafkaConsumer<ConsumerRecord<String,String>> consumer
                 = new FlinkKafkaConsumer<ConsumerRecord<String,String>>(topic, new KafkaStringSchema(), properties);
         //从一个小时前开始消费,避免全量拉取过程中更新日志的丢失
-        consumer.setStartFromTimestamp(System.currentTimeMillis() - 1800000);
+        consumer.setStartFromTimestamp(System.currentTimeMillis() - 5 *60 * 1000);
 
         //flink任务运行中,更新mysql状态
         JDBCUtil.updateRunningFlinkRealtimeStatus(jobID);
