@@ -62,12 +62,10 @@ public class KuduUtil implements Serializable {
                 KuduSession session = getKuduSession();
                 Delete delete = kuduTable.newDelete();
                 PartialRow row = delete.getRow();
-
                 JSONObject data = array.getJSONObject(i);
                 String pk = "";  //kudu主键对应的内容
                 Schema colSchema = kuduTable.getSchema();
                 List <ColumnSchema> pkList = colSchema.getPrimaryKeyColumns();
-
                 for(ColumnSchema item : pkList){
                     String colName = item.getName();
                     if("table_id" .equals(colName)){

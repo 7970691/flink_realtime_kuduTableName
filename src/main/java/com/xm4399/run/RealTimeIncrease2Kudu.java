@@ -34,7 +34,8 @@ public class RealTimeIncrease2Kudu {
         // 设置无重试模式,job出现意外时直接失败
         env.setRestartStrategy(RestartStrategies.noRestart());
         // 设置check point
-        
+        /*env.setStateBackend(new RocksDBStateBackend("hdfs:///checkpoints-data/");
+        env.enableCheckpointing(60 * 1000);*/
         //  从kafka中读取数据
         // 创建kafka相关的配置
         Properties properties = new Properties();
