@@ -88,10 +88,8 @@ public class KuduSink extends RichSinkFunction<ConsumerRecord<String,String>> {
                 String rowType = JSON.parseObject(row.value()).getOrDefault("type","").toString();
                 if("INSERT".equals(rowType) || "UPDATE".equals(rowType)){
                     kuduUtil.upsertRecordToKudu(kuduTable,row);
-                    System.out.println("添加或更新了>>>>" +  data);
                 }else if("DELETE".equals(rowType)){
                     kuduUtil.deleteRecordFromKudu(kuduTable,row);
-                    System.out.println("删除了>>>>>  " +data);
                 }
             }
         }else{

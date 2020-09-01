@@ -131,50 +131,35 @@ public class KuduUtil implements Serializable {
     public void upsertRecordToKudu(KuduTable kuduTable, ConsumerRecord<String,String> record) throws KuduException {
         JSONArray array = JSON.parseArray(JSON.parseObject(record.value()).get("data").toString());
         int len = array.size();
-        System.out.println("dataArrayd的长度为>>>>>>>>>>>>>>>>>>>>" +len);
         if(len > 0){
             for (int i = 0; i < len ; i++) {
-                System.out.println("此时的索引为>>>>>>>>>>>>>>" + i);
                 Upsert upsert = kuduTable.newUpsert();
                 PartialRow row = upsert.getRow();
                 JSONObject fieldValue = array.getJSONObject(i);
                 String fieldValueStirng = fieldValue.toString(); // data所有内容
-                System.out.println("字段的内容为>>>>>>>>>>>>>"  + fieldValueStirng);
                 Schema colSchema =kuduTable.getSchema();
                 List<ColumnSchema> colList = colSchema.getColumns();
-                System.out.println("获取到columnList>>>>>>>>>>>>>>>>>>>>");
                 for(ColumnSchema item : colList){
-                    System.out.println("进入colList的循环:>>>>>>>>");
                     String colName = item.getName();
-                    System.out.println("kudu表的字段名>>>>>>>>>>" + colName);
                     //int colIdx = this.getColumnIndex(colSchema,colName);
                     int colIdx = colSchema.getColumnIndex(colName);
                     Type colType = item.getType();
                     Common.DataType dataType = colType.getDataType(decimalCol);
-                    System.out.println("获取到dataType>>>>>>>>>>>>>>>>>" + dataType.toString());
                     if(fieldValue.containsKey(colName)){
-                        System.out.println("fieldValue包含了kudu字段名>>>>>>>>" + colName);
                         try{
                            String field = fieldValue.get(colName).toString();
-                            System.out.println("要加入的字段内容为>>>>>>>>>>" + field);
                            //kudu单元格最大不超过64k,当内容超过16384位,将其截断
                             if(field.length() >= 16384){
-                                System.out.println("有超过16384字符>>>>>>>>");
                                 field = field.substring(0,16380);
                             }
                             addRow(row,field,colName,colIdx,colType,dataType);
-                            System.out.println("有错吗？");
                         }catch (Exception e){
                             e.printStackTrace();
                         }
                     }else if("table_id" .equals(colName)){
-                        System.out.println("进入table_id>>>>>>>>>>>");
                         String subTableName = JSON.parseObject(record.value()).getOrDefault("table","").toString();
-                        System.out.println("分表名为: "   + subTableName + ">>>>>>>>>>>>>>>>>>>>>>>>");
                         String table_id = subTableName.substring(subTableName.lastIndexOf("_") + 1, subTableName.length());
-                        System.out.println("table_id名为: "   + table_id + ">>>>>>>>>>>>>>>>>>>>>>>>");
                         row.addShort(colIdx, Short.parseShort(table_id));
-                        System.out.println("row add完毕>>>>>>>>>>>>>>>>>>>>>>");
                         //addRow(row,table_id,colName,colIdx,colType,dataType);
                     }
                 }
@@ -186,7 +171,6 @@ public class KuduUtil implements Serializable {
     }
     private int getColumnIndex(Schema columns, String colName){
         try{
-            System.out.println("获取kudu字段名在schema的索引>>>>>>>>>>");
             System.out.println(columns.getColumnIndex(colName));
             return columns.getColumnIndex(colName);
             //System.out.println(columns.getColumnIndex(colName));
