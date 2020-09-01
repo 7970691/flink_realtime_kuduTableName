@@ -16,7 +16,7 @@ public class RealTimeIncrease2Kudu {
 
     public static void main(String[] args) {
         String jobID = args[0];
-        String[] conInfoArr = JDBCUtil.getConfInfoArr(jobID);
+        String[] conInfoArr = new JDBCUtil().getConfInfoArr(jobID);
         String address = conInfoArr[0];
         String username = conInfoArr[1];
         String password = conInfoArr[2];
@@ -36,8 +36,6 @@ public class RealTimeIncrease2Kudu {
         // 设置check point
         /*env.setStateBackend(new RocksDBStateBackend("hdfs:///checkpoints-data/");
         env.enableCheckpointing(60 * 1000);*/
-        //  从kafka中读取数据
-        // 创建kafka相关的配置
         Properties properties = new Properties();
         String consumerGroupName = tableName + "_" + jobID;
         properties.setProperty("enable.auto.commit", "true");
@@ -52,10 +50,10 @@ public class RealTimeIncrease2Kudu {
         FlinkKafkaConsumer<ConsumerRecord<String,String>> consumer
                 = new FlinkKafkaConsumer<ConsumerRecord<String,String>>(topic, new KafkaStringSchema(), properties);
         //从一个小时前开始消费,避免全量拉取过程中更新日志的丢失
-        consumer.setStartFromTimestamp(System.currentTimeMillis() - 5 *60 * 1000);
+        consumer.setStartFromTimestamp(System.currentTimeMillis() - 60 *60 * 1000);
 
         //flink任务运行中,更新mysql状态
-        JDBCUtil.updateRunningFlinkRealtimeStatus(jobID);
+        new JDBCUtil().updateJobState(jobID, "Run_CheckFlinkJobState");
         DataStreamSink<ConsumerRecord<String,String>> stream = env
                 .addSource(consumer)
                 .addSink(new KuduSink(address, username, password, dbName, tableName, isSubTable, topic, kuduTableName));
@@ -65,7 +63,7 @@ public class RealTimeIncrease2Kudu {
             env.execute(jobName);
         } catch (Exception exception) {
             // flink任务出现异常,更新mysql状态
-            JDBCUtil.updateExceptionFlinkRealtimeStatus(jobID);
+            new JDBCUtil().updateJobState(jobID, "Failed_RealTime");
             exception.printStackTrace();
         }
     }
