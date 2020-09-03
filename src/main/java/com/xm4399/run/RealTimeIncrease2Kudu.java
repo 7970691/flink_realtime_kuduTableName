@@ -1,6 +1,7 @@
 package com.xm4399.run;
 
 
+import com.xm4399.util.ConfUtil;
 import com.xm4399.util.JDBCUtil;
 import org.apache.flink.api.common.restartstrategy.RestartStrategies;
 import org.apache.flink.streaming.api.datastream.DataStreamSink;
@@ -39,7 +40,7 @@ public class RealTimeIncrease2Kudu {
         Properties properties = new Properties();
         String consumerGroupName = tableName + "_" + jobID;
         properties.setProperty("enable.auto.commit", "true");
-        properties.setProperty("bootstrap.servers", "10.0.0.194:9092,10.0.0.195:9092,10.0.0.199:9092");
+        properties.setProperty("bootstrap.servers", new ConfUtil().getValue("kafkaBootStrapServers"));
         properties.setProperty("group.id", consumerGroupName);
         properties.setProperty("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         properties.setProperty("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");

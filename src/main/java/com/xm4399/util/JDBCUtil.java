@@ -70,10 +70,13 @@ public class JDBCUtil {
 
     public  Connection getConnection (){
         Connection connection = null;
+        String address = new ConfUtil().getValue("address");
+        String username = new ConfUtil().getValue("username");
+        String password = new ConfUtil().getValue("password");
+        String dbName = new ConfUtil().getValue("dbName");
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            connection = DriverManager.getConnection("jdbc:mysql://10.0.0.211:3307/chenzhikun_test", "gprp", "gprp@@4399");
-            //connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/chenzhikun", "canal", "canal");
+            connection = DriverManager.getConnection("jdbc:mysql://" + address + "/chenzhikun_test", username, password);
             return connection;
         } catch (Exception e){
             e.printStackTrace();
