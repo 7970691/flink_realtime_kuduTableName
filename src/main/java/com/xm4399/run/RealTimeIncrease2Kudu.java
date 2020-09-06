@@ -41,30 +41,29 @@ public class RealTimeIncrease2Kudu {
         String consumerGroupName = tableName + "_" + jobID;
         properties.setProperty("enable.auto.commit", "true");
         properties.setProperty("bootstrap.servers", new ConfUtil().getValue("kafkaBootStrapServers"));
+        //properties.setProperty("bootstrap.servers", "10.0.0.194:9092,10.0.0.195:9092,10.0.0.199:9092");
         properties.setProperty("group.id", consumerGroupName);
         properties.setProperty("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         properties.setProperty("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-        //properties.setProperty("auto.offset.reset", "earliest");
-
-
 
         FlinkKafkaConsumer<ConsumerRecord<String,String>> consumer
                 = new FlinkKafkaConsumer<ConsumerRecord<String,String>>(topic, new KafkaStringSchema(), properties);
         //从一个小时前开始消费,避免全量拉取过程中更新日志的丢失
-        consumer.setStartFromTimestamp(System.currentTimeMillis() - 60 *60 * 1000);
+        consumer.setStartFromTimestamp(System.currentTimeMillis() - 120 *60 * 1000);
 
-        //flink任务运行中,更新mysql状态
-        new JDBCUtil().updateJobState(jobID, "Run_CheckFlinkJobState");
         DataStreamSink<ConsumerRecord<String,String>> stream = env
                 .addSource(consumer)
                 .addSink(new KuduSink(address, username, password, dbName, tableName, isSubTable, topic, kuduTableName));
 
         try {
             String jobName = "flink_realtime_job_" + jobID;
+            //flink任务运行中,更新mysql状态
+            new JDBCUtil().updateJobState(jobID, "2_RealTime");
             env.execute(jobName);
         } catch (Exception exception) {
             // flink任务出现异常,更新mysql状态
-            new JDBCUtil().updateJobState(jobID, "Failed_RealTime");
+            new JDBCUtil().updateJobState(jobID, "-1_RealTime");
+            new JDBCUtil().insertErroeInfo(jobID, "RealTime", "" );
             exception.printStackTrace();
         }
     }

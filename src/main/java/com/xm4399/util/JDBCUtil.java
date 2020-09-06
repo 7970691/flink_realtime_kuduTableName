@@ -67,6 +67,35 @@ public class JDBCUtil {
         }
     }
 
+    //写入报错信息
+    public  void insertErroeInfo(String jobID, String jobPart, String errorMsg)  {
+        Connection connection = null;
+        PreparedStatement pst =null ;
+
+        try {
+            connection = getConnection();
+            String sql = "insert into error_log (job_id, job_part, error_msg) values(?,?,?)";
+            pst = connection.prepareStatement(sql);
+            int  jobIDNum = Integer.parseInt(jobID);
+            pst.setInt(1,jobIDNum);
+            pst.setString(2,jobPart);
+            pst.setString(3,errorMsg);
+            pst.executeUpdate();
+            pst.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }finally {
+            try {
+                pst.close();
+                connection.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            } finally {
+                pst = null;
+                connection = null;
+            }
+        }
+    }
 
     public  Connection getConnection (){
         Connection connection = null;
@@ -76,7 +105,7 @@ public class JDBCUtil {
         String dbName = new ConfUtil().getValue("dbName");
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            connection = DriverManager.getConnection("jdbc:mysql://" + address + "/chenzhikun_test", username, password);
+            connection = DriverManager.getConnection("jdbc:mysql://" + address + "/" + dbName, username, password);
             return connection;
         } catch (Exception e){
             e.printStackTrace();
