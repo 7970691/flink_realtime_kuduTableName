@@ -1,4 +1,4 @@
-package com.xm4399.run;
+package com.xm4399.test;
 
 import org.apache.flink.streaming.api.TimeCharacteristic;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
