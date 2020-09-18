@@ -39,12 +39,13 @@ public class FlinkTableTest {
                 "    'database-name' = 'chenzhikun',\n" +
                 "    'table-name' = 'order_info'\n" +
                 ")";
-        stenv.executeSql(str);
-        //stenv.executeSql(str).print();
-       // TableResult a ;
+        TableResult tableResult = stenv.executeSql(str);
 
         String query = "select *  from order_info";
         stenv.executeSql(query).print();
+
+       /* stenv.executeSql("CREATE TABLE kafka_test_format (\n" +
+                "      day_str STRING )");*/
 
        /* stenv.executeSql("CREATE TABLE kafka_test_format (\n" +
                 "      day_str STRING \n" +
@@ -55,13 +56,13 @@ public class FlinkTableTest {
                 "    'format'     = 'changelog-json',\n" +
                 "    'scan.startup.mode'     = 'earliest-offset'\n" +
                 ")");
+*/
 
-
-        String insert = "INSERT INTO kafka_test_format\n" +
+      /*  String insert = "INSERT INTO kafka_test_format\n" +
                 "SELECT create_time as day_str \n" +
                 "FROM default_database.order_info " ;
-        stenv.executeSql(insert).print();*/
-
+        stenv.executeSql(insert).print();
+*/
         /*String query = "select *  from kafka_test_format";
         stenv.executeSql(query).print();*/
     }

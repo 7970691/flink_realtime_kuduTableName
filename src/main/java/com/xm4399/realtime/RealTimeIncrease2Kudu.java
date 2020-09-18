@@ -1,10 +1,7 @@
 package com.xm4399.realtime;
 
 
-import com.xm4399.util.KafkaStringSchema;
-import com.xm4399.util.KuduSink;
 import org.apache.flink.api.common.restartstrategy.RestartStrategies;
-import org.apache.flink.streaming.api.datastream.DataStreamSink;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.connectors.kafka.FlinkKafkaConsumer;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
