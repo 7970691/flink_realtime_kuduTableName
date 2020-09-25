@@ -11,18 +11,29 @@ import java.util.Map;
  * @Description:
  */
 public class MyStringClass {
-    String isSnapshot;
+
+    private String tableName;
+    private String isSnapshot;
     private HashMap<String,String> prikey = new HashMap<>();
     private HashMap<String,String> values = new HashMap<>();
-    private String rowKind;
+    private String rowKind; //INSERT,DELETE,UPDATE
 
     public MyStringClass(){ }
-
-    public MyStringClass(String isSnapshot, HashMap<String, String> prikey, HashMap<String, String> values, String rowKind) {
+    public MyStringClass(String tableName, String isSnapshot, HashMap<String, String> prikey, HashMap<String, String> values, String rowKind) {
+        this.tableName = tableName;
         this.isSnapshot = isSnapshot;
         this.prikey = prikey;
         this.values = values;
         this.rowKind = rowKind;
+    }
+
+
+    public String getTableName() {
+        return tableName;
+    }
+
+    public void setTableName(String tableName) {
+        this.tableName = tableName;
     }
 
     public String getIsSnapshot() {
@@ -60,8 +71,9 @@ public class MyStringClass {
     @Override
     public String toString() {
         return "MyStringClass{" +
-                "isSnapshot=" + isSnapshot +
-                ", prikey=" + prikey.get("id")+
+                "tableName='" + tableName + '\'' +
+                ", isSnapshot='" + isSnapshot + '\'' +
+                ", prikey=" + prikey +
                 ", values=" + values +
                 ", rowKind='" + rowKind + '\'' +
                 '}';

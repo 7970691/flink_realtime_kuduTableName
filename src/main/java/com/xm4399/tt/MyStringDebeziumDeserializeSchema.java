@@ -25,9 +25,13 @@ public class MyStringDebeziumDeserializeSchema implements DebeziumDeserializatio
         public void deserialize(SourceRecord record, Collector<MyStringClass> out) throws Exception {
             Envelope.Operation op = Envelope.operationFor(record);
             MyStringClass myStringClass = new MyStringClass();
-            //是否快照
             Struct value =(Struct) record.value();
             Struct source =(Struct) value.getStruct("source");
+            //获取表名
+            String tableNmae = source.get("table").toString();
+            myStringClass.setTableName(tableNmae);
+
+            //是否快照
             String isSnapshot = source.getString("snapshot");
             if (isSnapshot == null){
                 isSnapshot = "false";
@@ -45,26 +49,32 @@ public class MyStringDebeziumDeserializeSchema implements DebeziumDeserializatio
             }
             myStringClass.setPrikey(mysqlPkMap);
 
-            //各字段键值对
-            List<Field> allFieldsList = value.getStruct("after").schema().fields();
-            HashMap<String,String> mysqlAllFieldsMap = new HashMap<>();
-            for (Field field : allFieldsList){
-                String fieldName = field.name();
-                String fieldValue = value.getStruct("after").get(fieldName).toString();
-                mysqlAllFieldsMap.put(fieldName, fieldValue);
-            }
-            myStringClass.setValues(mysqlAllFieldsMap);
 
             if (op == Envelope.Operation.CREATE || op == Envelope.Operation.READ) {
                 myStringClass.setRowKind("INSERT");
+                setValues2MyStringClass(myStringClass, value, "after");
                 out.collect(myStringClass);
             } else if (op == Envelope.Operation.DELETE) {
                 myStringClass.setRowKind("DELETE");
+                setValues2MyStringClass(myStringClass, value, "before");
                 out.collect(myStringClass);
             } else {
                 myStringClass.setRowKind("UPDATE");
+                setValues2MyStringClass(myStringClass, value, "after");
                 out.collect(myStringClass);
             }
+        }
+
+        //根据不同的rowKind决定获取after Struct还是before Struct
+        public void  setValues2MyStringClass(MyStringClass myStringClass, Struct value, String afterOrBefore){
+            List<Field> allFieldsList = value.getStruct(afterOrBefore).schema().fields();
+            HashMap<String,String> mysqlAllFieldsMap = new HashMap<>();
+            for (Field field : allFieldsList){
+                String fieldName = field.name();
+                String fieldValue = value.getStruct(afterOrBefore).get(fieldName).toString();
+                mysqlAllFieldsMap.put(fieldName, fieldValue);
+            }
+            myStringClass.setValues(mysqlAllFieldsMap);
         }
 
         @Override

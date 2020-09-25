@@ -30,18 +30,24 @@
             <artifactId>flink-connector-mysql-cdc</artifactId>
             <version>1.1.0</version>
         </dependency>
+
         <dependency>
             <groupId>com.alibaba.ververica</groupId>
-            <!-- add the dependency matching your database -->
             <artifactId>flink-sql-connector-mysql-cdc</artifactId>
             <version>1.1.0</version>
         </dependency>
+
         <dependency>
             <groupId>com.alibaba.ververica</groupId>
             <artifactId>flink-format-changelog-json</artifactId>
             <version>1.1.0</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-statebackend-rocksdb_2.11</artifactId>
+            <version>${flink.version}</version>
+        </dependency>
 
         <dependency>
             <groupId>org.apache.flink</groupId>
@@ -60,6 +66,7 @@
             <artifactId>flink-table-common</artifactId>
             <version>${flink.version}</version>
         </dependency>
+
         <dependency>
             <groupId>org.apache.flink</groupId>
             <artifactId>flink-connector-kafka_2.11</artifactId>
