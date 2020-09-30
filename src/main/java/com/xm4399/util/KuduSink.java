@@ -17,20 +17,21 @@ public class KuduSink extends RichSinkFunction<MyStringClass>  {
     private String tableName;
     private String isSubTable;
     private String kuduTableName;
-    Long time = System.currentTimeMillis();
+    private String jobID;
 
-    public KuduSink(String tableName, String isSubTable, String kuduTableName) {
+    public KuduSink(String tableName, String isSubTable, String kuduTableName, String jobID) {
         this.tableName = tableName;
         this.isSubTable = isSubTable;
         this.kuduTableName = kuduTableName;
+        this.jobID = jobID;
     }
 
     @Override
-    public void invoke(MyStringClass value, Context context) throws Exception {
+    public void invoke(MyStringClass record, Context context) throws Exception {
         if (null == kuduUtil) {
             kuduUtil = new KuduUtil();
         }
-        processEveryRow(value, kuduUtil, tableName, isSubTable, kuduTableName);
+        processEveryRow(record, kuduUtil, tableName, isSubTable, kuduTableName, jobID);
     }
 
     @Override
@@ -45,20 +46,15 @@ public class KuduSink extends RichSinkFunction<MyStringClass>  {
         kuduUtil.close();
     }
 
-    public void processEveryRow( MyStringClass row, KuduUtil kuduUtil,  String tableName, String isSubTable, String kuduTableName) throws KuduException {
-        Boolean isFlush = false; //是否需要flush
+    public void processEveryRow( MyStringClass row, KuduUtil kuduUtil,  String tableName, String isSubTable, String kuduTableName, String jobID) throws KuduException {
         ArrayList<String> tableNameList = new ArrayList<String>();
         KuduTable kuduTable = null;
         kuduTable = kuduUtil.getKuduTable(kuduTableName);
         String rowKind = row.getRowKind();
         if ("INSERT".equals(rowKind) || "UPDATE".equals(rowKind)) {
-            if ((System.currentTimeMillis() - time) > 1000){  //500毫秒flush一次
-                isFlush = true;
-                time = System.currentTimeMillis();
-            }
-            kuduUtil.upsertRecordToKudu(kuduTable, row ,isFlush);
+            kuduUtil.upsertRecordToKudu(kuduTable, row , jobID);
         } else if ("DELETE".equals(rowKind)) {
-            kuduUtil.deleteRecordFromKudu(kuduTable, row);
+            kuduUtil.deleteRecordFromKudu(kuduTable, row, jobID);
         }
     }
 

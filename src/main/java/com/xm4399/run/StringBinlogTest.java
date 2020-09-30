@@ -23,7 +23,7 @@ import java.util.HashMap;
  */
 public class StringBinlogTest {
     public static void main(String[] args) throws Exception {
-        String jobID = args[0];
+        /*String jobID = args[0];
         String firstOrFromCheckPoint = args[1];
         String[] conInfoArr = new JDBCUtil().getConfInfoArr(jobID);
         String address = conInfoArr[0];
@@ -33,9 +33,9 @@ public class StringBinlogTest {
         String tableName = conInfoArr[4];
         String isSubTable = conInfoArr[6];
         String kuduTableName = conInfoArr[8];
-        mysql2Kudu(address, username, password, dbName, tableName, isSubTable, kuduTableName, jobID, firstOrFromCheckPoint);
-        /*mysql2Kudu("10.0.0.92:3310", "cnbbsReadonly", "LLKFN*k241235", "4399_cnbbs",
-                "thread_image_like_user_0", "false", "kuduTableName","111","FirstFlinkJob");*/
+        mysql2Kudu(address, username, password, dbName, tableName, isSubTable, kuduTableName, jobID, firstOrFromCheckPoint);*/
+        mysql2Kudu("localhost:3306", "root", "a5515458", "chenzhikun",
+                "sub_1", "false", "kuduTableName","111","FirstFlinkJob");
     }
 
     public static void mysql2Kudu(String address, String username, String password, String dbName, String tableName,
@@ -44,13 +44,13 @@ public class StringBinlogTest {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         //env.setRestartStrategy(RestartStrategies.noRestart());
         //env.setRestartStrategy(RestartStrategies.fixedDelayRestart( 2147483647,5));
-        env.enableCheckpointing( 5 * 60 * 1000);
+       /* env.enableCheckpointing( 5 * 60 * 1000);
         String checkPointDir = new ConfUtil().getValue("checkpointDir");
         env.setStateBackend(new RocksDBStateBackend(checkPointDir, true));
         CheckpointConfig config = env.getCheckpointConfig();
         config.enableExternalizedCheckpoints(CheckpointConfig.ExternalizedCheckpointCleanup.RETAIN_ON_CANCELLATION);
         config.setTolerableCheckpointFailureNumber(30);
-        config.setCheckpointTimeout(20 * 60* 1000);
+        config.setCheckpointTimeout(20 * 60* 1000);*/
 
         String[] tableArr = null;
         if ("true".equals(isSubTable)){
@@ -69,14 +69,13 @@ public class StringBinlogTest {
                 .build();
         System.out.println("---------------------------------> start");
 
-        env.addSource(sourceFunction)
+        env.addSource(sourceFunction).map(record ->{
+            System.out.println(record.toString());
+            return record;
+        });
 
-                 .map(myStringClass -> {
-                         System.out.println(myStringClass);
-                         return myStringClass;
-                     }).setParallelism(5);
                 //.addSink(new KuduSink(tableName, isSubTable, kuduTableName)).setParallelism(5);
-        try {
+        /*try {
             //firstOrFromCheckPoint的值为FirstFlinkJob 或 StartFlinkJobFromCheckPoint
             new JDBCUtil().updateJobState(jobID, "2_"+firstOrFromCheckPoint);
             env.execute("flink-cdc-" + jobID);
@@ -84,6 +83,6 @@ public class StringBinlogTest {
             new JDBCUtil().updateJobState(jobID, "-1_"+firstOrFromCheckPoint);
             new JDBCUtil().insertErroeInfo(jobID, firstOrFromCheckPoint, "" );
             e.printStackTrace();
-        }
+        }*/
     }
 }

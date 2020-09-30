@@ -86,17 +86,31 @@ public class JDBCUtil {
         } catch (Exception e) {
             e.printStackTrace();
         }finally {
-            try {
-                pst.close();
-                connection.close();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            } finally {
-                pst = null;
-                connection = null;
-            }
+            close2(pst, connection);
         }
     }
+
+    // 记录 checkpoint 信息
+    public  void insertCheckPointInfo(String jobID, String flinkJobID, String checkPointPath)  {
+        Connection connection = null;
+        PreparedStatement pst =null ;
+        try {
+            connection = getConnection();
+            String sql = "insert into checkpoint_record (job_id, flink_job_id, checkpoint_path) values(?,?,?)";
+            pst = connection.prepareStatement(sql);
+            int jobId = Integer.parseInt(jobID);
+            pst.setInt(1,jobId);
+            pst.setString(2,flinkJobID);
+            pst.setString(3,checkPointPath);
+            pst.executeUpdate();
+            pst.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }finally {
+            close2(pst, connection);
+        }
+    }
+
 
     public  Connection getConnection (){
         Connection connection = null;
@@ -135,5 +149,19 @@ public class JDBCUtil {
         }
     }
 
-
+    public  void close2(PreparedStatement pst,Connection con ) {
+        try {
+            if (pst != null) {
+                pst.close();
+            }
+            if (con != null) {
+                con.close();
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            pst = null;
+            con = null;
+        }
+    }
 }
