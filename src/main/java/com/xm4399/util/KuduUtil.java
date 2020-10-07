@@ -90,6 +90,7 @@ public class KuduUtil implements Serializable {
             if(allFieldsAndValues.containsKey(colName)){
                 try{
                     String field = allFieldsAndValues.get(colName);
+                    record.getPrikey().get("");
                     //kudu单元格最大不超过64k,当内容超过16384位,将其截断
                     if(field.length() >= 16384){
                         field = field.substring(0,16380);
@@ -120,18 +121,6 @@ public class KuduUtil implements Serializable {
             System.out.println("after--" + System.currentTimeMillis()+ "-------" + d);
         }
     }
-   /* private int getColumnIndex(Schema columns, String colName){
-        try{
-            System.out.println(columns.getColumnIndex(colName));
-            return columns.getColumnIndex(colName);
-            //System.out.println(columns.getColumnIndex(colName));
-        }catch(Exception e){
-            e.printStackTrace();
-        }finally {
-
-            return -1;
-        }
-    }*/
 
     public KuduTable getKuduTable(String tableName) throws KuduException {
         KuduTable kuduTable = null;

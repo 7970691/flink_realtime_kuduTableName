@@ -27,20 +27,19 @@ public class JDBCUtil {
                 String dbName = res.getString(6);
                 String tableName = res.getString(7);
                 String fields = res.getString(8);
-                String is_subtable = res.getString(9);
-                String topic = res.getString(10);
-                String kudu_table_name = res.getString(11);
-                String mode = res.getString(12);
+                String isSubtable = res.getString(9);
+                String kuduTableName = res.getString(10);
+                String mode = res.getString(11);
                 confInfoArr[0] = address;
                 confInfoArr[1] = username;
                 confInfoArr[2] = password;
                 confInfoArr[3] = dbName;
                 confInfoArr[4] = tableName;
                 confInfoArr[5] = fields;
-                confInfoArr[6] = is_subtable;
-                confInfoArr[7] = topic;
-                confInfoArr[8] = kudu_table_name;
-                confInfoArr[9] = mode;
+                confInfoArr[6] = isSubtable;
+                //confInfoArr[7] = topic;
+                confInfoArr[7] = kuduTableName;
+                confInfoArr[8] = mode;
             }
             return confInfoArr;
         } catch (Exception e) {

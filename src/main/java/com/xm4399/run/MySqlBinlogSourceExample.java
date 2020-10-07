@@ -6,6 +6,7 @@ import com.xm4399.util.ConfUtil;
 import com.xm4399.util.JDBCOnlineUtil;
 import com.xm4399.util.JDBCUtil;
 import com.xm4399.util.KuduSink;
+import org.apache.flink.api.common.restartstrategy.RestartStrategies;
 import org.apache.flink.contrib.streaming.state.RocksDBStateBackend;
 import org.apache.flink.streaming.api.CheckpointingMode;
 import org.apache.flink.streaming.api.environment.CheckpointConfig;
@@ -32,7 +33,7 @@ public class MySqlBinlogSourceExample {
         String dbName = conInfoArr[3];
         String tableName = conInfoArr[4];
         String isSubTable = conInfoArr[6];
-        String kuduTableName = conInfoArr[8];
+        String kuduTableName = conInfoArr[7];
         mysql2Kudu(address, username, password, dbName, tableName, isSubTable, kuduTableName, jobID, firstOrFromCheckPoint);
         /*mysql2Kudu("10.0.0.92:3310", "cnbbsReadonly", "LLKFN*k241235", "4399_cnbbs",
                 "thread_image_like_user_0", "false", "kuduTableName","111","FirstFlinkJob");*/
@@ -42,7 +43,7 @@ public class MySqlBinlogSourceExample {
                                   String isSubTable, String kuduTableName, String jobID, String firstOrFromCheckPoint) throws Exception {
 
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-        //env.setRestartStrategy(RestartStrategies.noRestart());
+        env.setRestartStrategy(RestartStrategies.noRestart());
         env.enableCheckpointing( 20 * 60 * 1000);
         String checkPointDir = new ConfUtil().getValue("checkpointDir");
         env.setStateBackend(new RocksDBStateBackend(checkPointDir, true));
