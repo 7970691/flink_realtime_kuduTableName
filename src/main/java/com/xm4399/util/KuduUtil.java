@@ -3,11 +3,14 @@ package com.xm4399.util;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.xm4399.run.MySqlBinlogSourceExample;
 import com.xm4399.tt.MyStringClass;
 import jdk.nashorn.internal.scripts.JO;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kudu.*;
 import org.apache.kudu.client.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import scala.annotation.meta.field;
 
 import java.io.Serializable;
@@ -24,6 +27,7 @@ public class KuduUtil implements Serializable {
 
     private static  KuduSession session = getKuduSession();
     private static ColumnTypeAttributes decimalCol = new ColumnTypeAttributes.ColumnTypeAttributesBuilder().precision(15).scale(4).build();
+    private static final Logger logger = LoggerFactory.getLogger(KuduUtil.class);
     public KuduClient getKuduClient(){
         if(kuduClient != null){
             return kuduClient;
@@ -40,7 +44,7 @@ public class KuduUtil implements Serializable {
         session.setFlushMode(SessionConfiguration.FlushMode.AUTO_FLUSH_BACKGROUND);
         session.setTimeoutMillis(AsyncKuduClient.DEFAULT_OPERATION_TIMEOUT_MS);
        // session.setIgnoreAllDuplicateRows(true);
-        session.setMutationBufferSpace(50000);
+        session.setMutationBufferSpace(5000);
         session.setFlushInterval(500);
         return session;
     }
@@ -73,7 +77,11 @@ public class KuduUtil implements Serializable {
             sessionClosedCancelJob(jobID);
         }
         session.apply(delete);
-        session.flush();
+        /*try {
+            session.flush();
+        } catch(Exception e){
+            System.out.println(e.toString());
+        }*/
     }
 
     public void upsertRecordToKudu(KuduTable kuduTable, MyStringClass record, String jobID) throws KuduException {
@@ -97,7 +105,8 @@ public class KuduUtil implements Serializable {
                     }
                     addRow(row,field,colName,colIdx,colType,dataType);
                 }catch (Exception e){
-                    e.printStackTrace();
+                    logger.error("exception info :", e);
+                    System.out.println(e.toString());
                 }
             }else if("table_id" .equals(colName)){
                 String subTableName = record.getTableName();
@@ -106,20 +115,21 @@ public class KuduUtil implements Serializable {
                 addRow(row,table_id,colName,colIdx,colType,dataType);
             }
         }
+
         if (session == null){
            sessionClosedCancelJob(jobID);
         }
         session.apply(upsert);
-        if ("false".equals(record.getIsSnapshot()) || "last".equals(record.getIsSnapshot())){
-            double d = Math.random();
-            System.out.println("before" + System.currentTimeMillis()+ "-------" + d);
+       /* if ("false".equals(record.getIsSnapshot()) || "last".equals(record.getIsSnapshot())){
+            System.out.println("flush-before" + System.currentTimeMillis()+ "-------" + d);
             try {
                 session.flush();
             } catch(Exception e){
-                e.printStackTrace();
+                System.out.println("output  exception:");
+                System.out.println(e.toString());
             }
-            System.out.println("after--" + System.currentTimeMillis()+ "-------" + d);
-        }
+            System.out.println("flush-after--" + System.currentTimeMillis()+ "-------" + d);
+        }*/
     }
 
     public KuduTable getKuduTable(String tableName) throws KuduException {
@@ -134,6 +144,7 @@ public class KuduUtil implements Serializable {
     // session 为null时,cancel并根据checkpoint重启flink job
     public void sessionClosedCancelJob(String jobID){
         System.out.println("session is null >>>>>>>>>>>>>>>>>>>>>>");
+        logger.error("kudu session is null");
         new JDBCUtil().insertErroeInfo(jobID , "", "kudu session is null, maybe closed");
         FlinkRestApiUtil flinkRestApiUtil = new FlinkRestApiUtil();
         String flinkJobID = flinkRestApiUtil.getFlinkJobOneInfo("flink-cdc-" + jobID, "jid");
@@ -174,9 +185,9 @@ public class KuduUtil implements Serializable {
                 break;
             case DECIMAL64 :
                 row.addDecimal(colIdx,new BigDecimal(field,new MathContext(15,RoundingMode.HALF_UP)).setScale(4,RoundingMode.HALF_UP));
-
                 break;
             default:
+                logger.error("The provided data type doesn't map to know any known one.");
                 throw new IllegalArgumentException("The provided data type doesn't map to know any known one.");
         }
     }

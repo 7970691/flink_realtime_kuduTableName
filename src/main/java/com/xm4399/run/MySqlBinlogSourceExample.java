@@ -12,6 +12,9 @@ import org.apache.flink.streaming.api.CheckpointingMode;
 import org.apache.flink.streaming.api.environment.CheckpointConfig;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.source.SourceFunction;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.HashMap;
 
 import static org.apache.flink.table.runtime.types.TypeInfoDataTypeConverter.fromDataTypeToTypeInfo;
@@ -26,6 +29,7 @@ public class MySqlBinlogSourceExample {
     public static void main(String[] args) throws Exception {
         String jobID = args[0];
         String firstOrFromCheckPoint = args[1];
+        int parallelismCount = Integer.parseInt(args[2]);
         String[] conInfoArr = new JDBCUtil().getConfInfoArr(jobID);
         String address = conInfoArr[0];
         String username = conInfoArr[1];
@@ -34,13 +38,13 @@ public class MySqlBinlogSourceExample {
         String tableName = conInfoArr[4];
         String isSubTable = conInfoArr[6];
         String kuduTableName = conInfoArr[7];
-        mysql2Kudu(address, username, password, dbName, tableName, isSubTable, kuduTableName, jobID, firstOrFromCheckPoint);
+        mysql2Kudu(address, username, password, dbName, tableName, isSubTable, kuduTableName, jobID, firstOrFromCheckPoint, parallelismCount);
         /*mysql2Kudu("10.0.0.92:3310", "cnbbsReadonly", "LLKFN*k241235", "4399_cnbbs",
                 "thread_image_like_user_0", "false", "kuduTableName","111","FirstFlinkJob");*/
     }
 
-    public static void mysql2Kudu(String address, String username, String password, String dbName, String tableName,
-                                  String isSubTable, String kuduTableName, String jobID, String firstOrFromCheckPoint) throws Exception {
+    public static void mysql2Kudu(String address, String username, String password, String dbName, String tableName, String isSubTable,
+                                  String kuduTableName, String jobID, String firstOrFromCheckPoint, int parallelismCount) throws Exception {
 
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         env.setRestartStrategy(RestartStrategies.noRestart());
@@ -80,7 +84,7 @@ public class MySqlBinlogSourceExample {
                     }
                     return sb.toString();
                 })
-                .addSink(new KuduSink(tableName, isSubTable, kuduTableName, jobID)).setParallelism(5);
+                .addSink(new KuduSink(tableName, isSubTable, kuduTableName, jobID)).setParallelism(parallelismCount);
 
         try {
             //firstOrFromCheckPoint的值为FirstFlinkJob 或 StartFlinkJobFromCheckPoint
@@ -89,7 +93,9 @@ public class MySqlBinlogSourceExample {
         }catch (Exception e){
             new JDBCUtil().updateJobState(jobID, "-1_"+firstOrFromCheckPoint);
             new JDBCUtil().insertErroeInfo(jobID, firstOrFromCheckPoint, "" );
-            e.printStackTrace();
+            final Logger logger = LoggerFactory.getLogger(MySqlBinlogSourceExample.class);
+            logger.error("exception info :", e);
+            System.out.println(e.toString());
         }
 
 

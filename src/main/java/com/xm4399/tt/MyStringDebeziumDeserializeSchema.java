@@ -46,7 +46,6 @@ public class MyStringDebeziumDeserializeSchema implements DebeziumDeserializatio
             String pkName = field.name();
             String pkValue = mysqlPk.get(pkName).toString();
             mysqlPkMap.put(pkName, pkValue);
-            System.out.println(">>>" + pkName + "  --  " + pkValue);
         }
         myStringClass.setPrikey(mysqlPkMap);
 
@@ -70,7 +69,6 @@ public class MyStringDebeziumDeserializeSchema implements DebeziumDeserializatio
     public void setValues2MyStringClass( MyStringClass myStringClass, Struct value, String afterOrBefore) {
         List<Field> allFieldsList = value.getStruct(afterOrBefore).schema().fields();
         HashMap<String, String> mysqlAllFieldsMap = new HashMap<>();
-        System.out.println();
         for (Field field : allFieldsList) {
             String fieldName = field.name();
             String fieldValue ;
@@ -88,6 +86,5 @@ public class MyStringDebeziumDeserializeSchema implements DebeziumDeserializatio
     public TypeInformation<MyStringClass> getProducedType() {
         return TypeInformation.of(MyStringClass.class);
     }
-
 
 }
