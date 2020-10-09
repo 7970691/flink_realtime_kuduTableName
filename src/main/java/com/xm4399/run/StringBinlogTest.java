@@ -2,19 +2,9 @@ package com.xm4399.run;
 
 import com.alibaba.ververica.cdc.connectors.mysql.MySQLSource;
 import com.alibaba.ververica.cdc.debezium.StringDebeziumDeserializationSchema;
-import com.xm4399.tt.MyStringClass;
-import com.xm4399.tt.MyStringDebeziumDeserializeSchema;
-import com.xm4399.util.ConfUtil;
 import com.xm4399.util.JDBCOnlineUtil;
-import com.xm4399.util.JDBCUtil;
-import com.xm4399.util.KuduSink;
-import org.apache.flink.contrib.streaming.state.RocksDBStateBackend;
-import org.apache.flink.streaming.api.environment.CheckpointConfig;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.source.SourceFunction;
-
-import java.io.IOException;
-import java.util.HashMap;
 
 /**
  * @Auther: czk

@@ -1,4 +1,4 @@
-package com.xm4399.tt;
+package com.xm4399.util;
 
 import com.alibaba.ververica.cdc.debezium.DebeziumDeserializationSchema;
 import io.debezium.data.Envelope;
@@ -7,10 +7,8 @@ import org.apache.flink.util.Collector;
 import org.apache.kafka.connect.data.Field;
 import org.apache.kafka.connect.data.Struct;
 import org.apache.kafka.connect.source.SourceRecord;
-import scala.annotation.meta.field;
 
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 
 /**

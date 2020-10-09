@@ -1,4 +1,4 @@
-package com.xm4399.tt;
+package com.xm4399.util;
 
 import org.apache.kafka.connect.data.Struct;
 

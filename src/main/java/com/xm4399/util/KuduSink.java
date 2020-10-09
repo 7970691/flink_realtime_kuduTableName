@@ -1,12 +1,7 @@
 package com.xm4399.util;
 
-import com.alibaba.fastjson.JSON;
-import com.xm4399.test.MyClass;
-import com.xm4399.tt.MyStringClass;
 import org.apache.flink.configuration.Configuration;
 import org.apache.flink.streaming.api.functions.sink.RichSinkFunction;
-import org.apache.flink.streaming.api.functions.sink.SinkFunction;
-import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kudu.client.*;
 
 import java.util.ArrayList;

@@ -1,11 +1,7 @@
 package com.xm4399.run;
 
 import com.alibaba.ververica.cdc.connectors.mysql.MySQLSource;
-import com.xm4399.tt.*;
-import com.xm4399.util.ConfUtil;
-import com.xm4399.util.JDBCOnlineUtil;
-import com.xm4399.util.JDBCUtil;
-import com.xm4399.util.KuduSink;
+import com.xm4399.util.*;
 import org.apache.flink.api.common.restartstrategy.RestartStrategies;
 import org.apache.flink.contrib.streaming.state.RocksDBStateBackend;
 import org.apache.flink.streaming.api.CheckpointingMode;
@@ -16,8 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
-
-import static org.apache.flink.table.runtime.types.TypeInfoDataTypeConverter.fromDataTypeToTypeInfo;
 
 /**
  * @Auther: czk
