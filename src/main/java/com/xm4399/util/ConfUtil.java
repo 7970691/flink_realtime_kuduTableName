@@ -1,7 +1,14 @@
 package com.xm4399.util;
 
-import com.ctrip.framework.apollo.Config;
-import com.ctrip.framework.apollo.ConfigService;
+
+import com.typesafe.config.Config;
+import com.typesafe.config.ConfigFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Properties;
 
 /**
  * @Auther: czk
@@ -9,21 +16,19 @@ import com.ctrip.framework.apollo.ConfigService;
  * @Description:
  */
 public class ConfUtil {
-    /*public  String getValue(String key){
+    public  String getValue(String key){
         Properties prop = new Properties();
-        InputStream in = new ConfUtil().getClass().getResourceAsStream("/config.properties");
+        InputStream in = new ConfUtil().getClass().getResourceAsStream("/config/application.properties");
         try {
             prop.load(in);
+            return prop.getProperty(key);
         } catch (IOException e) {
-            e.printStackTrace();
+            final Logger logger = LoggerFactory.getLogger(ConfUtil.class);
+            logger.error("获取参数失败:", e);
+            System.out.println(e.toString());
         }
-        return prop.getProperty(key);
-    }*/
-    // 获取apollo配置
-    public String getValue(String key){
-        Config config = ConfigService.getAppConfig(); //config instance is singleton for each namespace and is never null
-        String someDefaultValue = "someDefaultValueForTheKey";
-        String value = config.getProperty(key, someDefaultValue);
-        return value;
+        return null;
     }
+
+
 }

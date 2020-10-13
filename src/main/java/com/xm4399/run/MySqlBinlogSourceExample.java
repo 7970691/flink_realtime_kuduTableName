@@ -1,6 +1,7 @@
 package com.xm4399.run;
 
 import com.alibaba.ververica.cdc.connectors.mysql.MySQLSource;
+import com.sun.scenario.effect.impl.sw.sse.SSEBlend_SRC_OUTPeer;
 import com.xm4399.util.*;
 import org.apache.flink.api.common.restartstrategy.RestartStrategies;
 import org.apache.flink.contrib.streaming.state.RocksDBStateBackend;
@@ -50,7 +51,6 @@ public class MySqlBinlogSourceExample {
         config.setCheckpointingMode(CheckpointingMode.AT_LEAST_ONCE);
         config.setTolerableCheckpointFailureNumber(15);
         config.setCheckpointTimeout(60 * 60* 1000);
-
         String[] tableArr = null;
         if ("true".equals(isSubTable)){
             tableArr =  new JDBCOnlineUtil().listAllSubTableName(address, username, password, dbName, tableName).toArray(new String[]{});
@@ -90,6 +90,7 @@ public class MySqlBinlogSourceExample {
             final Logger logger = LoggerFactory.getLogger(MySqlBinlogSourceExample.class);
             logger.error("exception info :", e);
             System.out.println(e.toString());
+            throw new  Exception();
         }
 
 

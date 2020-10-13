@@ -21,30 +21,26 @@ public class KafkaFormatTest {
         StreamTableEnvironment stenv = StreamTableEnvironment.create(env, bsSettings);
         stenv.executeSql("CREATE TABLE order_info (\n" +
                 "      id INT,\n" +
-                "       appname STRING, \n" +
-                "       kind_id_name STRING, \n" +
-                "       appname STRING \n" +
+                "       username STRING \n" +
                 ") WITH (\n" +
                 "    'connector' = 'mysql-cdc',\n" +
                 "     'hostname' = '10.0.0.211',\n" +
                 "     'port' = '3307',\n" +
                 "     'username' = 'gprp',\n" +
                 "      'password' = 'gprp@@4399',\n" +
-                "        'database-name' = '4399_mobi_services',\n" +
-                "      'table-name' = 'tuijian_gameboxGame'\n" +
+                "        'database-name' = 'chenzhikun_test',\n" +
+                "      'table-name' = 'sub_1'\n" +
                 ")");
 
         stenv.executeSql("CREATE TABLE kafka_test_format (\n" +
                 "      id INT,\n" +
-                "       appname STRING,\n" +
-                "       kind_id_name STRING, \n" +
-                "       appname STRING \n" +
+                "       username STRING\n" +
                 ") WITH (\n" +
                 "    'connector' = 'kafka',\n" +
                 "    'topic'     = 'flink_realtime_test',\n" +
                 "    'properties.bootstrap.servers'     = '10.0.0.194:9092,10.0.0.195:9092,10.0.0.199:9092',\n" +
-                "    'format'     = 'json',\n" +
-                "    'scan.startup.mode'     = 'latest-offset'\n" +
+                "    'format'     = 'changelog-json',\n" +
+                "    'scan.startup.mode'     = 'earliest-offset'\n" +
                 ")");
 
 

@@ -14,7 +14,7 @@ import java.util.List;
 
 public class KuduUtil implements Serializable {
 
-    private static KuduClient kuduClient = new KuduClient.KuduClientBuilder("10.20.0.197:7051,10.20.0.198:7051,10.20.0.199:7051")
+    private static KuduClient kuduClient = new KuduClient.KuduClientBuilder(new ConfUtil().getValue("kuduMaster"))
             .defaultAdminOperationTimeoutMs(60000).defaultOperationTimeoutMs(60000).build();
 
     private static  KuduSession session = getKuduSession();
@@ -24,7 +24,7 @@ public class KuduUtil implements Serializable {
         if(kuduClient != null){
             return kuduClient;
         }else{
-            KuduClient kuduClient = new KuduClient.KuduClientBuilder("10.20.0.197:7051,10.20.0.198:7051,10.20.0.199:7051")
+            KuduClient kuduClient = new KuduClient.KuduClientBuilder(new ConfUtil().getValue("kuduMaster"))
                     .defaultAdminOperationTimeoutMs(60000).defaultOperationTimeoutMs(60000).build();
         return kuduClient;
         }
@@ -92,8 +92,10 @@ public class KuduUtil implements Serializable {
                     String field = allFieldsAndValues.get(colName);
                     record.getPrikey().get("");
                     //kudu单元格最大不超过64k,当内容超过16384位,将其截断
-                    if(field.length() >= 16384){
-                        field = field.substring(0,16380);
+                    if (field != null){
+                        if(field.length() >= 16384){
+                            field = field.substring(0,16380);
+                        }
                     }
                     addRow(row,field,colName,colIdx,colType,dataType);
                 }catch (Exception e){
